@@ -12,9 +12,23 @@ function SnakeClient(context, snake, socket, cursors_context) {
     $(window).resize(calc_offset);
 
     sc.init = function() {
-        $(document).on('key', function(e) {
-            sc.socket.emit('key', sc.cursor);
+        Mousetrap.bind(['up'], function(e) {
+            e.preventDefault();
+            sc.socket.emit('key', 'up');
         });
+        Mousetrap.bind(['down'], function(e) {
+            e.preventDefault();
+            sc.socket.emit('key', 'down');
+        });
+        Mousetrap.bind(['left'], function(e) {
+            e.preventDefault();
+            sc.socket.emit('key', 'left');
+        });
+        Mousetrap.bind(['right'], function(e) {
+            e.preventDefault();
+            sc.socket.emit('key', 'right');
+        });
+
 
         return sc;
     }

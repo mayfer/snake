@@ -36,11 +36,7 @@ io.on('connection', function(socket){
             y: 1,
         }
     } else {
-        snake.apples[socket.public_id] = {
-            x: 10,
-            y: 10,
-        }
-        snake.apples_list.push(socket.public_id);
+        snake.add_apple(socket.public_id);
     }
 
     socket.on('key', function(msg){
@@ -66,6 +62,25 @@ io.on('connection', function(socket){
         } else {
             snake.remove_apple(socket.public_id);
             console.log('removed apple', socket.public_id);
+        }
+    });
+
+    socket.on('key', function(key){
+        if(socket.public_id in snake.apples) {
+            var object = snake.apples[socket.public_id];
+        } else if(snake.snake.session_id == socket.public_id) {
+            var object = snake.snake;
+        } else {
+            
+        }
+        if(key == "up") {
+            object.y -= 1;
+        } else if(key == "down") {
+            object.y += 1;
+        } else if(key == "left") {
+            object.x -= 1;
+        } else if(key == "right") {
+            object.x += 1;
         }
     });
 });
