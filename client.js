@@ -1,8 +1,9 @@
-function SnakeClient(context, snake, socket, cursors_context) {
+function SnakeClient(context, snake, network, cursors_context) {
     var sc = this;
     sc.context = context;
     sc.cursors_context = cursors_context;
-    sc.socket = socket;
+    sc.network = network;
+    sc.socket = network.socket;
     sc.snake = snake;
 
     var calc_offset = function(e){
@@ -11,22 +12,43 @@ function SnakeClient(context, snake, socket, cursors_context) {
     calc_offset();
     $(window).resize(calc_offset);
 
+    sc.move = function(key) {
+        if(sc.network.public_id in sc.snake.apples) {
+            var object = sc.snake.apples[sc.network.public_id];
+        } else if(sc.snake.snake.session_id == sc.network.public_id) {
+            var object = sc.snake.snake;
+        }
+        if(key == "up") {
+            object.y -= 1;
+        } else if(key == "down") {
+            object.y += 1;
+        } else if(key == "left") {
+            object.x -= 1;
+        } else if(key == "right") {
+            object.x += 1;
+        }
+    }
+
     sc.init = function() {
         Mousetrap.bind(['up'], function(e) {
             e.preventDefault();
             sc.socket.emit('key', 'up');
+            sc.move('up');
         });
         Mousetrap.bind(['down'], function(e) {
             e.preventDefault();
             sc.socket.emit('key', 'down');
+            sc.move('down');
         });
         Mousetrap.bind(['left'], function(e) {
             e.preventDefault();
             sc.socket.emit('key', 'left');
+            sc.move('left');
         });
         Mousetrap.bind(['right'], function(e) {
             e.preventDefault();
             sc.socket.emit('key', 'right');
+            sc.move('right');
         });
 
 

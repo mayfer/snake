@@ -20,7 +20,7 @@
                 var cursors_context = $cursors_canvas.get(0).getContext("2d");
 
                 var network = Network();
-                var game = SnakeClient(context, snake, network.socket, cursors_context).init();
+                var game = SnakeClient(context, snake, network, cursors_context).init();
                 network.game = game;
 
                 game.render();
