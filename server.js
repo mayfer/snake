@@ -10,7 +10,11 @@ app.get('/', function(req, res){
 });
 
 
-snake.snake = null;
+snake.snake = {
+    session_id: null,
+    x: 5,
+    y: 5,
+};
 snake.apples = {};
 snake.apples_list = [];
 
@@ -29,12 +33,8 @@ io.on('connection', function(socket){
     console.log('connected', socket.id, socket.public_id);
     socket.emit('public_id', socket.public_id);
 
-    if(snake.snake === null) {
-        snake.snake = {
-            session_id: socket.public_id,
-            x: 1,
-            y: 1,
-        }
+    if(snake.snake.session_id === null) {
+        snake.snake.session_id = socket.public_id;
     } else {
         snake.add_apple(socket.public_id);
     }
@@ -48,9 +48,7 @@ io.on('connection', function(socket){
             // set the snake to the next person
             var next = snake.apples_list[0];
             if(next) {
-                snake.snake = {
-                    session_id: next,
-                }
+                snake.snake.session_id = next;
 
                 // remove the apple who became the snake
                 snake.remove_apple(next);
