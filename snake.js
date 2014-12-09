@@ -6,7 +6,8 @@
     }
 
     snake.grid = {
-        size: 15,
+        height: 48,
+        width: 84,
     }
 
     snake.snake = null;

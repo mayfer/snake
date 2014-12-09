@@ -6,6 +6,9 @@ function SnakeClient(context, snake, network, cursors_context) {
     sc.socket = network.socket;
     sc.snake = snake;
 
+    sc.grid_size = context.width / snake.grid.width;
+    sc.pixel_size = 4;
+
     var calc_offset = function(e){
         sc.canvas_offset = $('#container').offset();
     }
@@ -30,25 +33,38 @@ function SnakeClient(context, snake, network, cursors_context) {
     }
 
     sc.init = function() {
-        Mousetrap.bind(['up'], function(e) {
-            e.preventDefault();
-            sc.socket.emit('key', 'up');
-            sc.move('up');
+        var arrow_keys = {
+            38: 'up',
+            40: 'down',
+            37: 'left',
+            39: 'right',
+        }
+        var arrow_key_states = {
+            38: false,
+            40: false,
+            37: false,
+            39: false,
+        }
+        $(document).keydown(function(e) {
+            var keycode = e.which;
+
+            if(keycode in arrow_keys) {
+                e.preventDefault();
+                if(arrow_key_states[keycode] == false) {
+                    var arrow = arrow_keys[keycode];
+                    sc.socket.emit('key', arrow);
+                    sc.move(arrow);
+                    arrow_key_states[keycode] = true;
+                }
+            }
+
         });
-        Mousetrap.bind(['down'], function(e) {
-            e.preventDefault();
-            sc.socket.emit('key', 'down');
-            sc.move('down');
-        });
-        Mousetrap.bind(['left'], function(e) {
-            e.preventDefault();
-            sc.socket.emit('key', 'left');
-            sc.move('left');
-        });
-        Mousetrap.bind(['right'], function(e) {
-            e.preventDefault();
-            sc.socket.emit('key', 'right');
-            sc.move('right');
+        $(document).keyup(function(e) {
+            var keycode = e.which;
+
+            if(keycode in arrow_keys) {
+                arrow_key_states[keycode] = false;
+            }
         });
 
 
@@ -58,27 +74,27 @@ function SnakeClient(context, snake, network, cursors_context) {
 
     sc.draw_snake = function() {
         var ctx = sc.context;
-        ctx.fillStyle = "#333333";
+        ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
         if(snake.snake) {
             ctx.fillRect(
-                snake.snake.x * snake.grid.size,
-                snake.snake.y * snake.grid.size,
-                snake.grid.size,
-                snake.grid.size
+                snake.snake.x * sc.grid_size * sc.pixel_size,
+                snake.snake.y * sc.grid_size * sc.pixel_size,
+                sc.grid_size * sc.pixel_size,
+                sc.grid_size * sc.pixel_size
             );
         }
     }
 
     sc.draw_apples = function() {
         var ctx = sc.context;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
         for(var sid in snake.apples) {
             var apple = snake.apples[sid];
             ctx.fillRect(
-                apple.x * snake.grid.size,
-                apple.y * snake.grid.size,
-                snake.grid.size,
-                snake.grid.size
+                apple.x * sc.grid_size * sc.pixel_size,
+                apple.y * sc.grid_size * sc.pixel_size,
+                sc.grid_size * sc.pixel_size,
+                sc.grid_size * sc.pixel_size
             );
         }
     }
