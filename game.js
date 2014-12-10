@@ -34,7 +34,7 @@
     game.snake = {
         session_id: null,
         tail: [],
-        length: 2,
+        length: 5,
         x: 5,
         y: 5,
         next: null,
@@ -43,11 +43,14 @@
     game.apples = {
     };
 
-    game.calculate_ball = function() {
-        var s = game.settings;
-
-        game.last_timestamp = current_timestamp;
-
+    game.update_snake_tail = function() {
+        if(game.snake.tail.length == game.snake.length) {
+            game.snake.tail.shift();
+        }
+        game.snake.tail.push({x: game.snake.x, y: game.snake.y})
+    }
+    game.grow_snake_tail = function() {
+        game.snake.lwngth += 1;
     }
 
     game.add_apple = function(public_id, x, y) {
@@ -73,6 +76,7 @@
         var key = game.snake.next;
         var snake = game.snake;
         game.move(snake, key);
+        game.update_snake_tail(key);
     }
 
 })(typeof game === 'undefined'? this['game']={}: game);

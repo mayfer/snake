@@ -81,12 +81,15 @@ function SnakeClient(context, game, network, cursors_context) {
         var ctx = sc.context;
         ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
         if(sc.game.snake) {
-            ctx.fillRect(
-                sc.game.snake.x * sc.grid_size_x * sc.game.grid.block_size,
-                sc.game.snake.y * sc.grid_size_y * sc.game.grid.block_size,
-                sc.grid_size_x * sc.game.grid.block_size,
-                sc.grid_size_y * sc.game.grid.block_size
-            );
+            for(var i=0; i<sc.game.snake.tail.length; i++) {
+                var coordinate = sc.game.snake.tail[i];
+                ctx.fillRect(
+                    coordinate.x * sc.grid_size_x * sc.game.grid.block_size,
+                    coordinate.y * sc.grid_size_y * sc.game.grid.block_size,
+                    sc.grid_size_x * sc.game.grid.block_size,
+                    sc.grid_size_y * sc.game.grid.block_size
+                );
+            }
         }
     }
 

@@ -60,6 +60,7 @@ io.on('connection', function(socket){
             game.move(apple, key);
         } else if(game.snake.session_id == socket.public_id) {
             game.move(game.snake, key);
+            game.update_snake_tail(key);
         }
     });
     socket.on('next_key', function(key){
