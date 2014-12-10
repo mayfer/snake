@@ -7,7 +7,7 @@
         <script src="mousetrap.js"></script>
         <script src="canvas.js"></script>
         <script src="animframe.js"></script>
-        <script src="snake.js"></script>
+        <script src="game.js"></script>
         <script src="client.js"></script>
         <script src="network.js"></script>
         
@@ -19,11 +19,13 @@
                 var $cursors_canvas = Canvas($('#cursors-overlay'));
                 var cursors_context = $cursors_canvas.get(0).getContext("2d");
 
-                var network = Network();
-                var game = SnakeClient(context, snake, network, cursors_context).init();
-                network.game = game;
+                var network = new Network();
+                var gameclient = new SnakeClient(context, game, network, cursors_context).init();
+                network.gameclient = gameclient;
 
-                game.render();
+                gameclient.render();
+
+                window.g = gameclient;
             });
         </script>
         <style>

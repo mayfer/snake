@@ -1,13 +1,13 @@
-function SnakeClient(context, snake, network, cursors_context) {
+function SnakeClient(context, game, network, cursors_context) {
     var sc = this;
     sc.context = context;
     sc.cursors_context = cursors_context;
     sc.network = network;
     sc.socket = network.socket;
-    sc.snake = snake;
+    sc.game = game;
 
-    sc.grid_size = context.width / snake.grid.width;
-    sc.pixel_size = 4;
+    sc.grid_size_x = context.width / game.grid.width;
+    sc.grid_size_y = context.height / game.grid.height;
 
     var calc_offset = function(e){
         sc.canvas_offset = $('#container').offset();
@@ -16,19 +16,21 @@ function SnakeClient(context, snake, network, cursors_context) {
     $(window).resize(calc_offset);
 
     sc.move = function(key) {
-        if(sc.network.public_id in sc.snake.apples) {
-            var object = sc.snake.apples[sc.network.public_id];
-        } else if(sc.snake.snake.session_id == sc.network.public_id) {
-            var object = sc.snake.snake;
-        }
-        if(key == "up") {
-            object.y -= 1;
-        } else if(key == "down") {
-            object.y += 1;
-        } else if(key == "left") {
-            object.x -= 1;
-        } else if(key == "right") {
-            object.x += 1;
+        if(sc.network.public_id in sc.game.apples) {
+            var apple = sc.game.apples[sc.network.public_id];
+            if(key == "up") {
+                apple.y -= 1;
+            } else if(key == "down") {
+                apple.y += 1;
+            } else if(key == "left") {
+                apple.x -= 1;
+            } else if(key == "right") {
+                apple.x += 1;
+            }
+            sc.socket.emit('key', arrow);
+        } else if(sc.game.snake.session_id == sc.network.public_id) {
+            sc.game.snake.next = key;
+            sc.socket.emit('next_key', key);
         }
     }
 
@@ -52,7 +54,6 @@ function SnakeClient(context, snake, network, cursors_context) {
                 e.preventDefault();
                 if(arrow_key_states[keycode] == false) {
                     var arrow = arrow_keys[keycode];
-                    sc.socket.emit('key', arrow);
                     sc.move(arrow);
                     arrow_key_states[keycode] = true;
                 }
@@ -67,6 +68,10 @@ function SnakeClient(context, snake, network, cursors_context) {
             }
         });
 
+        setInterval(function() {
+            sc.game.move_snake();
+            sc.socket.emit('key', sc.game.snake.next);
+        }, 200);
 
         return sc;
     }
@@ -75,12 +80,12 @@ function SnakeClient(context, snake, network, cursors_context) {
     sc.draw_snake = function() {
         var ctx = sc.context;
         ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
-        if(snake.snake) {
+        if(sc.game.snake) {
             ctx.fillRect(
-                snake.snake.x * sc.grid_size * sc.pixel_size,
-                snake.snake.y * sc.grid_size * sc.pixel_size,
-                sc.grid_size * sc.pixel_size,
-                sc.grid_size * sc.pixel_size
+                sc.game.snake.x * sc.grid_size_x * sc.game.grid.block_size,
+                sc.game.snake.y * sc.grid_size_y * sc.game.grid.block_size,
+                sc.grid_size_x * sc.game.grid.block_size,
+                sc.grid_size_y * sc.game.grid.block_size
             );
         }
     }
@@ -88,13 +93,13 @@ function SnakeClient(context, snake, network, cursors_context) {
     sc.draw_apples = function() {
         var ctx = sc.context;
         ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
-        for(var sid in snake.apples) {
-            var apple = snake.apples[sid];
+        for(var sid in sc.game.apples) {
+            var apple = sc.game.apples[sid];
             ctx.fillRect(
-                apple.x * sc.grid_size * sc.pixel_size,
-                apple.y * sc.grid_size * sc.pixel_size,
-                sc.grid_size * sc.pixel_size,
-                sc.grid_size * sc.pixel_size
+                apple.x * sc.grid_size_x * sc.game.grid.block_size,
+                apple.y * sc.grid_size_y * sc.game.grid.block_size,
+                sc.grid_size_x * sc.game.grid.block_size,
+                sc.grid_size_y * sc.game.grid.block_size
             );
         }
     }
@@ -108,18 +113,6 @@ function SnakeClient(context, snake, network, cursors_context) {
         sc.draw_apples();
 
         window.requestAnimFrame(sc.render);
-    }
-
-    sc.move_snake = function(x, y) {
-        sc.snake.snake.x = x;
-        sc.snake.snake.y = y;
-    }
-
-    sc.set_snake = function(snake) {
-        sc.snake.snake = snake;
-    }
-    sc.set_apples = function(apples) {
-        sc.snake.apples = apples;
     }
 
     return sc;
