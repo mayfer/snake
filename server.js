@@ -12,17 +12,16 @@ app.get('/', function(req, res){
 
 setInterval(function(){
     io.sockets.emit('snake', game.snake);
-}, 150);
+}, 50);
 
 setInterval(function(){
     io.sockets.emit('apples', game.apples);
-}, 150);
+}, 50);
     
 
 io.on('connection', function(socket){
     socket.public_id = hash(socket.id);
     console.log('connected', socket.id, socket.public_id);
-    socket.emit('public_id', socket.public_id);
 
     if(game.snake.session_id === null) {
         game.snake.session_id = socket.public_id;
@@ -31,6 +30,10 @@ io.on('connection', function(socket){
         console.log("added apple", socket.public_id);
         game.add_apple(socket.public_id);
     }
+    socket.emit('id', {
+        public_id: socket.public_id,
+        snake_id: game.snake.session_id,
+    });
 
     socket.on('disconnect', function () {
         console.log('disconnected', socket.id, socket.public_id);
@@ -53,6 +56,9 @@ io.on('connection', function(socket){
         }
     });
 
+    socket.on('snake', function(snake){
+        game.snake = snake;
+    });
     socket.on('key', function(key){
 
         if(socket.public_id in game.apples) {
