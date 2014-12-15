@@ -5,10 +5,12 @@ function Network() {
     net.socket = io();
 
     net.socket.on('snake', function(msg){
+        net.gameclient.render();
         var g = net.gameclient.game;
         g.snake = msg;
     });
     net.socket.on('apples', function(msg){
+        net.gameclient.render();
         net.gameclient.game.apples = msg;
     });
 

@@ -116,7 +116,7 @@ function SnakeClient(context, game, network, cursors_context) {
         sc.draw_snake();
         sc.draw_apples();
 
-        window.requestAnimFrame(sc.render);
+        //window.requestAnimFrame(sc.render);
     }
 
     return sc;
