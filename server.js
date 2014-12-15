@@ -17,10 +17,18 @@ setInterval(function(){
 setInterval(function(){
     io.sockets.emit('apples', game.apples);
 }, 50);
+
+var snake_interval = setInterval(function() {
+    game.move_snake();
+}, 200);
+
+var public_ids = {};
     
 
 io.on('connection', function(socket){
     socket.public_id = hash(socket.id);
+    public_ids[socket.public_id] = socket.id;
+
     console.log('connected', socket.id, socket.public_id);
 
     if(game.snake.session_id === null) {

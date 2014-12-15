@@ -73,14 +73,8 @@ function SnakeClient(context, game, network, cursors_context) {
         return sc;
     }
 
-
-    sc.run_snake = function() {
-        setInterval(function() {
-            sc.game.move_snake();
-            if(sc.game.snake.session_id == sc.network.public_id) {
-                sc.socket.emit('snake', sc.game.snake);
-            }
-        }, 200);
+    sc.i_am_the_snake = function() {
+        return sc.game.snake.session_id == sc.network.public_id;
     }
 
     sc.draw_snake = function() {
