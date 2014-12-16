@@ -1,4 +1,4 @@
-pong
+snake
 ====
 
     npm install
