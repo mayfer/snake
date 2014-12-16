@@ -82,8 +82,10 @@ io.on('connection', function(socket){
     });
 });
 
-http.listen(8003, function(){
-    console.log('listening on *:8003');
+
+var port = parseInt(process.argv[2]) || 8003;
+http.listen(port, function(){
+    console.log('listening on *:'+port);
 });
 app.use(express.static(__dirname));
 

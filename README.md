@@ -2,5 +2,5 @@ snake
 ====
 
     npm install
-    node server.js
-    http://localhost:8002
+    node server.js 3000
+    http://localhost:3000
