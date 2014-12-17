@@ -6,28 +6,30 @@
         block_size: 4,
     }
 
-    game.move = function(object, key) {
+    game.move_apple = function(apple, key) {
         if(key == "up") {
-            object.y -= 1;
+            apple.y -= 1;
         } else if(key == "down") {
-            object.y += 1;
+            apple.y += 1;
         } else if(key == "left") {
-            object.x -= 1;
+            apple.x -= 1;
         } else if(key == "right") {
-            object.x += 1;
+            apple.x += 1;
         }
+
         var width = game.grid.width / game.grid.block_size;
         var height = game.grid.height / game.grid.block_size;
 
-        if(object.x < 0) {
-            object.x = width + object.x;
-        } else if(object.x >= width) {
-            object.x = object.x % width;
+        // wrap around
+        if(apple.x < 0) {
+            apple.x = width + apple.x;
+        } else if(apple.x >= width) {
+            apple.x = apple.x % width;
         }
-        if(object.y < 0) {
-            object.y = height + object.y;
-        } else if(object.y >= height) {
-            object.y = object.y % height;
+        if(apple.y < 0) {
+            apple.y = height + apple.y;
+        } else if(apple.y >= height) {
+            apple.y = apple.y % height;
         }
     }
 
@@ -38,6 +40,7 @@
         x: 5,
         y: 5,
         next: null,
+        prev: null,
     };
     game.apples_list = [];
     game.apples = {
@@ -73,10 +76,44 @@
         }
     }
     game.move_snake = function() {
-        var key = game.snake.next;
+        var next = game.snake.next;
+        var prev = game.snake.prev;
         var snake = game.snake;
-        game.move(snake, key);
-        game.update_snake_tail(key);
+        if(next) {
+            if(next == "up" && prev != "down") {
+                snake.y -= 1;
+            } else if(next == "down" && prev != "up") {
+                snake.y += 1;
+            } else if(next == "left" && prev != "right") {
+                snake.x -= 1;
+            } else if(next == "right" && prev != "left") {
+                snake.x += 1;
+            }
+
+            var width = game.grid.width / game.grid.block_size;
+            var height = game.grid.height / game.grid.block_size;
+
+            // wrap around
+            if(snake.x < 0) {
+                snake.x = width + snake.x;
+            } else if(snake.x >= width) {
+                snake.x = snake.x % width;
+            }
+            if(snake.y < 0) {
+                snake.y = height + snake.y;
+            } else if(snake.y >= height) {
+                snake.y = snake.y % height;
+            }
+
+            // if there is a tail already in that position kill the snake
+            for(var i=0; i<game.snake.tail.length; i++) {
+                var tail = game.snake.tail[i];
+                if(snake.x == tail.x && snake.y == tail.y) {
+                    console.log('kill the snake!');
+                }
+            }
+            game.update_snake_tail();
+        }
     }
 
 })(typeof game === 'undefined'? this['game']={}: game);

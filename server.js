@@ -41,15 +41,13 @@ io.on('connection', function(socket){
     });
 
     socket.on('disconnect', function () {
-        //console.log('disconnected', socket.id, socket.public_id);
+        // console.log('disconnected', socket.id, socket.public_id);
 
         if(game.snake && game.snake.session_id == socket.public_id) {
             // set the snake to the next person
             var next = game.apples_list[0];
             if(next) {
                 game.snake.session_id = next;
-
-                // remove the apple who became the snake
                 game.remove_apple(next);
             } else {
                 game.snake.session_id = null;
@@ -68,7 +66,7 @@ io.on('connection', function(socket){
     socket.on('apple_key', function(key){
         if(socket.public_id in game.apples) {
             var apple = game.apples[socket.public_id];
-            game.move(apple, key);
+            game.move_apple(apple, key);
             io.sockets.emit('apple', {
                 public_id: socket.public_id,
                 apple: apple,
@@ -77,6 +75,7 @@ io.on('connection', function(socket){
     });
     socket.on('snake_key', function(key){
         if(game.snake.session_id == socket.public_id) {
+            game.snake.prev = game.snake.next;
             game.snake.next = key;
         }
     });
