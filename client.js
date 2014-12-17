@@ -27,10 +27,10 @@ function SnakeClient(context, game, network, cursors_context) {
             } else if(key == "right") {
                 apple.x += 1;
             }
-            sc.socket.emit('key', key);
+            sc.socket.emit('apple_key', key);
         } else if(sc.game.snake.session_id == sc.network.public_id) {
             sc.game.snake.next = key;
-            sc.socket.emit('next_key', key);
+            sc.socket.emit('snake_key', key);
         }
     }
 

@@ -5,13 +5,20 @@ function Network() {
     net.socket = io();
 
     net.socket.on('snake', function(msg){
+        net.gameclient.game.snake = msg;
         net.gameclient.render();
-        var g = net.gameclient.game;
-        g.snake = msg;
     });
     net.socket.on('apples', function(msg){
-        net.gameclient.render();
         net.gameclient.game.apples = msg;
+        net.gameclient.render();
+    });
+    net.socket.on('apple', function(msg){
+        net.gameclient.game.apples[msg.public_id] = msg.apple;
+        net.gameclient.render();
+    });
+    net.socket.on('remove_apple', function(msg){
+        delete net.gameclient.game.apples[msg.public_id];
+        net.gameclient.render();
     });
 
     net.socket.on('id', function(id){
