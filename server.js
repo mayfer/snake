@@ -14,13 +14,30 @@ setInterval(function(){
     io.sockets.emit('apples', game.apples);
 }, 50);
 
+
 var snake_interval = setInterval(function() {
-    game.move_snake();
+    var snake_alive = game.move_snake();
     io.sockets.emit('snake', game.snake);
+
+    if(snake_alive == false) {
+        console.log('snake died');
+        io.sockets.emit('snake_died', {});
+        var next = game.apples_list[0];
+        var snake_id = game.snake.session_id;
+        if(next) {
+            game.snake.session_id = next;
+            game.remove_apple(next);
+            game.add_apple(snake_id);
+        } else {
+            game.snake.session_id = null;
+        }
+        game.reset_snake();
+    }
 }, 200);
 
 var public_ids = {};
-    
+
+
 
 io.on('connection', function(socket){
     socket.public_id = hash(socket.id);
@@ -39,6 +56,7 @@ io.on('connection', function(socket){
         public_id: socket.public_id,
         snake_id: game.snake.session_id,
     });
+    socket.emit('apples', game.apples);
 
     socket.on('disconnect', function () {
         // console.log('disconnected', socket.id, socket.public_id);
@@ -60,9 +78,6 @@ io.on('connection', function(socket){
         }
     });
 
-    socket.on('snake', function(snake){
-        game.snake = snake;
-    });
     socket.on('apple_key', function(key){
         if(socket.public_id in game.apples) {
             var apple = game.apples[socket.public_id];
@@ -75,8 +90,14 @@ io.on('connection', function(socket){
     });
     socket.on('snake_key', function(key){
         if(game.snake.session_id == socket.public_id) {
-            game.snake.prev = game.snake.next;
-            game.snake.next = key;
+            var prev = game.snake.prev;
+
+            if( !(key == "up" && prev == "down")
+            && !(key == "down" && prev == "up")
+            && !(key == "right" && prev == "left")
+            && !(key == "left" && prev == "right") ) {
+                game.snake.next = key;
+            }
         }
     });
 });

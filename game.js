@@ -50,10 +50,10 @@
         if(game.snake.tail.length == game.snake.length) {
             game.snake.tail.shift();
         }
-        game.snake.tail.push({x: game.snake.x, y: game.snake.y})
+        game.snake.tail.push({x: game.snake.x, y: game.snake.y});
     }
     game.grow_snake_tail = function() {
-        game.snake.lwngth += 1;
+        game.snake.length += 1;
     }
 
     game.add_apple = function(public_id, x, y) {
@@ -75,18 +75,27 @@
             game.apples_list.splice(i, 1);
         }
     }
+
+    game.reset_snake = function() {
+        game.snake.x = 10;
+        game.snake.y = 10;
+        game.snake.tail = [];
+    }
+
     game.move_snake = function() {
         var next = game.snake.next;
-        var prev = game.snake.prev;
         var snake = game.snake;
+
+        var snake_alive = true;
+
         if(next) {
-            if(next == "up" && prev != "down") {
+            if(next == "up") {
                 snake.y -= 1;
-            } else if(next == "down" && prev != "up") {
+            } else if(next == "down") {
                 snake.y += 1;
-            } else if(next == "left" && prev != "right") {
+            } else if(next == "left") {
                 snake.x -= 1;
-            } else if(next == "right" && prev != "left") {
+            } else if(next == "right") {
                 snake.x += 1;
             }
 
@@ -109,11 +118,13 @@
             for(var i=0; i<game.snake.tail.length; i++) {
                 var tail = game.snake.tail[i];
                 if(snake.x == tail.x && snake.y == tail.y) {
-                    console.log('kill the snake!');
+                    var snake_alive = false;
                 }
             }
             game.update_snake_tail();
+            game.snake.prev = game.snake.next;
         }
+        return snake_alive;
     }
 
 })(typeof game === 'undefined'? this['game']={}: game);

@@ -95,16 +95,29 @@ function SnakeClient(context, game, network, cursors_context) {
 
     sc.draw_apples = function() {
         var ctx = sc.context;
-        ctx.strokeStyle = "rgba(50, 50, 50, 0.8)";
+        ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
         ctx.strokeSize = 4;
+
+        var offsets = [
+            {x: 1, y: 0},
+            {x: 1, y: 2},
+            {x: 0, y: 1},
+            {x: 2, y: 1},
+        ];
+        var pixel_size_x = sc.grid_size_x * sc.game.grid.block_size / 3;
+        var pixel_size_y = sc.grid_size_y * sc.game.grid.block_size / 3;
+
         for(var sid in sc.game.apples) {
             var apple = sc.game.apples[sid];
-            ctx.strokeRect(
-                apple.x * sc.grid_size_x * sc.game.grid.block_size,
-                apple.y * sc.grid_size_y * sc.game.grid.block_size,
-                sc.grid_size_x * sc.game.grid.block_size,
-                sc.grid_size_y * sc.game.grid.block_size
-            );
+            for(var i=0; i<offsets.length; i++) {
+                var offset = offsets[i];
+                ctx.fillRect(
+                    apple.x * sc.grid_size_x * sc.game.grid.block_size + pixel_size_x * offset.x,
+                    apple.y * sc.grid_size_y * sc.game.grid.block_size + pixel_size_y * offset.y,
+                    pixel_size_x,
+                    pixel_size_y
+                );
+            }
         }
     }
 
