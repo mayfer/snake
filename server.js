@@ -10,15 +10,9 @@ app.get('/', function(req, res){
 });
 
 
-setInterval(function(){
-    io.sockets.emit('apples', game.apples);
-}, 50);
-
 
 var snake_interval = setInterval(function() {
     var snake_alive = game.move_snake();
-    io.sockets.emit('snake', game.snake);
-
     if(snake_alive == false) {
         console.log('snake died');
         io.sockets.emit('snake_died', {});
@@ -33,6 +27,10 @@ var snake_interval = setInterval(function() {
         }
         game.reset_snake();
     }
+
+    io.sockets.emit('snake', game.snake);
+    io.sockets.emit('apples', game.apples);
+
 }, 200);
 
 var public_ids = {};

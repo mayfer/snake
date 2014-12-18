@@ -6,37 +6,10 @@
         block_size: 4,
     }
 
-    game.move_apple = function(apple, key) {
-        if(key == "up") {
-            apple.y -= 1;
-        } else if(key == "down") {
-            apple.y += 1;
-        } else if(key == "left") {
-            apple.x -= 1;
-        } else if(key == "right") {
-            apple.x += 1;
-        }
-
-        var width = game.grid.width / game.grid.block_size;
-        var height = game.grid.height / game.grid.block_size;
-
-        // wrap around
-        if(apple.x < 0) {
-            apple.x = width + apple.x;
-        } else if(apple.x >= width) {
-            apple.x = apple.x % width;
-        }
-        if(apple.y < 0) {
-            apple.y = height + apple.y;
-        } else if(apple.y >= height) {
-            apple.y = apple.y % height;
-        }
-    }
-
     game.snake = {
         session_id: null,
         tail: [],
-        length: 5,
+        length: 2,
         x: 5,
         y: 5,
         next: null,
@@ -58,8 +31,8 @@
 
     game.add_apple = function(public_id, x, y) {
         if(x == undefined || y == undefined) {
-            x = 10;
-            y = 10;
+            x = Math.floor(Math.random() * game.grid.width / game.grid.block_size);
+            y = Math.floor(Math.random() * game.grid.height / game.grid.block_size);
         }
         game.apples[public_id] = {
             x: x,
@@ -80,6 +53,7 @@
         game.snake.x = 10;
         game.snake.y = 10;
         game.snake.tail = [];
+        game.snake.length = 2;
     }
 
     game.move_snake = function() {
@@ -123,8 +97,48 @@
             }
             game.update_snake_tail();
             game.snake.prev = game.snake.next;
+
+            for(var id in game.apples) {
+                var apple = game.apples[id];
+                if(snake.x == apple.x && snake.y == apple.y) {
+                    game.eat_apple(id);
+                }
+            }
         }
         return snake_alive;
+    }
+
+    game.eat_apple = function(id) {
+        game.remove_apple(id);
+        game.add_apple(id);
+        game.grow_snake_tail();
+    }
+
+    game.move_apple = function(apple, key) {
+        if(key == "up") {
+            apple.y -= 1;
+        } else if(key == "down") {
+            apple.y += 1;
+        } else if(key == "left") {
+            apple.x -= 1;
+        } else if(key == "right") {
+            apple.x += 1;
+        }
+
+        var width = game.grid.width / game.grid.block_size;
+        var height = game.grid.height / game.grid.block_size;
+
+        // wrap around
+        if(apple.x < 0) {
+            apple.x = width + apple.x;
+        } else if(apple.x >= width) {
+            apple.x = apple.x % width;
+        }
+        if(apple.y < 0) {
+            apple.y = height + apple.y;
+        } else if(apple.y >= height) {
+            apple.y = apple.y % height;
+        }
     }
 
 })(typeof game === 'undefined'? this['game']={}: game);
