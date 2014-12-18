@@ -10,9 +10,9 @@
         session_id: null,
         tail: [],
         length: 2,
-        x: 5,
-        y: 5,
-        next: null,
+        x: Math.floor(Math.random() * game.grid.width / game.grid.block_size),
+        y: Math.floor(Math.random() * game.grid.height / game.grid.block_size),
+        next: "up",
         prev: null,
     };
     game.apples_list = [];
