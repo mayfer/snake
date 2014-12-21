@@ -35,8 +35,19 @@
 
     game.add_apple = function(public_id, x, y) {
         if(x == undefined || y == undefined) {
-            x = Math.floor(Math.random() * game.grid.width / game.grid.block_size);
-            y = Math.floor(Math.random() * game.grid.height / game.grid.block_size);
+            // random spot for the apple, repeat until it's off the snake
+            var on_snake = true;
+            while(on_snake == true) {
+                x = Math.floor(Math.random() * game.grid.width / game.grid.block_size);
+                y = Math.floor(Math.random() * game.grid.height / game.grid.block_size);
+                var tail = game.snake.tail;
+                on_snake = false;
+                for(var i=0; i < tail.length; i++) {
+                    if(tail[i].x == x && tail[i].y == y) {
+                        on_snake = true;
+                    }
+                }
+            }
         }
         game.apples[public_id] = {
             x: x,
