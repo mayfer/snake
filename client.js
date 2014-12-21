@@ -1,13 +1,17 @@
-function SnakeClient(context, game, network, cursors_context) {
+function SnakeClient(context, game, network, shadow_context) {
     var sc = this;
     sc.context = context;
-    sc.cursors_context = cursors_context;
+    sc.shadow_context = shadow_context;
     sc.network = network;
     sc.socket = network.socket;
     sc.game = game;
 
-    sc.grid_size_x = context.width / game.grid.width;
-    sc.grid_size_y = context.height / game.grid.height;
+    sc.offset = 10;
+    sc.width = context.width - sc.offset * 2;
+    sc.height = context.height - sc.offset * 2;
+
+    sc.grid_size_x = sc.width / game.grid.width;
+    sc.grid_size_y = sc.height / game.grid.height;
 
     var calc_offset = function(e){
         sc.canvas_offset = $('#container').offset();
@@ -68,7 +72,15 @@ function SnakeClient(context, game, network, cursors_context) {
             }
         });
 
-        // sc.run_snake();
+
+        var ctx = sc.context;
+        ctx.fillStyle = "rgb(57, 60, 58)";
+        ctx.fillRect(0, 0, ctx.width, sc.grid_size_y);
+        ctx.fillRect(0, sc.grid_size_y, sc.grid_size_x, ctx.height);
+        ctx.fillRect(5, ctx.height - sc.grid_size_y, ctx.width, sc.grid_size_y);
+        ctx.fillRect(ctx.width - sc.grid_size_x, sc.grid_size_y, sc.grid_size_x, ctx.height - 2*sc.grid_size_y);
+
+        ctx.translate(10, 10);
 
         return sc;
     }
@@ -79,7 +91,6 @@ function SnakeClient(context, game, network, cursors_context) {
 
     sc.draw_snake = function() {
         var ctx = sc.context;
-        ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
         if(sc.game.snake) {
             for(var i=0; i<sc.game.snake.tail.length; i++) {
                 var coordinate = sc.game.snake.tail[i];
@@ -95,7 +106,6 @@ function SnakeClient(context, game, network, cursors_context) {
 
     sc.draw_apples = function() {
         var ctx = sc.context;
-        ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
         ctx.strokeSize = 4;
 
         var offsets = [
@@ -125,10 +135,12 @@ function SnakeClient(context, game, network, cursors_context) {
 
     sc.render = function() {
         var ctx = sc.context;
-        ctx.clearRect(0, 0, ctx.width, ctx.height);
+        ctx.clearRect(0, 0, sc.width, sc.height);
         sc.draw_snake();
         sc.draw_apples();
 
+        var snapshot = ctx.getImageData(0, 0, ctx.width*2, ctx.height*2);
+        sc.shadow_context.putImageData(snapshot, 0, 0);
         //window.requestAnimFrame(sc.render);
     }
 

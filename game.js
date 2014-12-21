@@ -62,6 +62,33 @@
         game.snake.length = 2;
     }
 
+    game.move_object = function(object, direction) {
+        if(direction == "up") {
+            object.y -= 1;
+        } else if(direction == "down") {
+            object.y += 1;
+        } else if(direction == "left") {
+            object.x -= 1;
+        } else if(direction == "right") {
+            object.x += 1;
+        }
+
+        var width = game.grid.width / game.grid.block_size;
+        var height = game.grid.height / game.grid.block_size;
+
+        // wrap around
+        if(object.x < 0) {
+            object.x = width + object.x;
+        } else if(object.x >= width) {
+            object.x = object.x % width;
+        }
+        if(object.y < 0) {
+            object.y = height + object.y;
+        } else if(object.y >= height) {
+            object.y = object.y % height;
+        }
+    }
+
     game.move_snake = function() {
         var next = game.snake.next;
         var snake = game.snake;
@@ -69,30 +96,7 @@
         var snake_alive = true;
 
         if(next) {
-            if(next == "up") {
-                snake.y -= 1;
-            } else if(next == "down") {
-                snake.y += 1;
-            } else if(next == "left") {
-                snake.x -= 1;
-            } else if(next == "right") {
-                snake.x += 1;
-            }
-
-            var width = game.grid.width / game.grid.block_size;
-            var height = game.grid.height / game.grid.block_size;
-
-            // wrap around
-            if(snake.x < 0) {
-                snake.x = width + snake.x;
-            } else if(snake.x >= width) {
-                snake.x = snake.x % width;
-            }
-            if(snake.y < 0) {
-                snake.y = height + snake.y;
-            } else if(snake.y >= height) {
-                snake.y = snake.y % height;
-            }
+            game.move_object(snake, next);
 
             // if there is a tail already in that position kill the snake
             for(var i=0; i<game.snake.tail.length; i++) {
@@ -121,30 +125,7 @@
     }
 
     game.move_apple = function(apple, key) {
-        if(key == "up") {
-            apple.y -= 1;
-        } else if(key == "down") {
-            apple.y += 1;
-        } else if(key == "left") {
-            apple.x -= 1;
-        } else if(key == "right") {
-            apple.x += 1;
-        }
-
-        var width = game.grid.width / game.grid.block_size;
-        var height = game.grid.height / game.grid.block_size;
-
-        // wrap around
-        if(apple.x < 0) {
-            apple.x = width + apple.x;
-        } else if(apple.x >= width) {
-            apple.x = apple.x % width;
-        }
-        if(apple.y < 0) {
-            apple.y = height + apple.y;
-        } else if(apple.y >= height) {
-            apple.y = apple.y % height;
-        }
+        game.move_object(apple, key);
     }
 
 })(typeof game === 'undefined'? this['game']={}: game);
