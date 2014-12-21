@@ -32,7 +32,7 @@ var snake_interval = setInterval(function() {
 
 var public_ids = {};
 
-
+game.add_apple('0');
 
 io.on('connection', function(socket){
     socket.public_id = hash(socket.id);
@@ -46,6 +46,7 @@ io.on('connection', function(socket){
     } else {
         // console.log("added apple", socket.public_id);
         game.add_apple(socket.public_id);
+        game.remove_apple('0');
     }
     socket.emit('id', {
         public_id: socket.public_id,
@@ -70,6 +71,14 @@ io.on('connection', function(socket){
             io.sockets.emit('remove_apple', {
                 public_id: socket.public_id,
             });
+
+            if(game.apples_list.length == 0) {
+                var apple = game.add_apple('0');
+                io.sockets.emit('apple', {
+                    public_id: '0',
+                    apple: apple,
+                });
+            }
         }
     });
 
