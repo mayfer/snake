@@ -14,7 +14,6 @@ app.get('/', function(req, res){
 var snake_interval = setInterval(function() {
     var snake_alive = game.move_snake();
     if(snake_alive == false) {
-        console.log('snake died');
         io.sockets.emit('snake_died', {});
         var next = game.apples_list[0];
         var snake_id = game.snake.session_id;
@@ -22,8 +21,6 @@ var snake_interval = setInterval(function() {
             game.snake.session_id = next;
             game.remove_apple(next);
             game.add_apple(snake_id);
-        } else {
-            game.snake.session_id = null;
         }
         game.reset_snake();
     }

@@ -17,6 +17,10 @@
     };
     game.apples_list = [];
     game.apples = {
+        '0': {
+            x: Math.floor(Math.random() * game.grid.width / game.grid.block_size),
+            y: Math.floor(Math.random() * game.grid.height / game.grid.block_size),
+        }
     };
 
     game.update_snake_tail = function() {
@@ -38,7 +42,9 @@
             x: x,
             y: y,
         }
-        game.apples_list.push(public_id);
+        if(public_id != '0') {
+            game.apples_list.push(public_id);
+        }
     }
 
     game.remove_apple = function(public_id) {
